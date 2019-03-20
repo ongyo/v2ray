@@ -10,7 +10,7 @@ none='\e[0m'
 # Root
 [[ $(id -u) != 0 ]] && echo -e " 哎呀……请使用 ${red}root ${none}用户运行 ${yellow}~(^_^) ${none}" && exit 1
 
-_version="v3.07"
+_version="v3.09"
 
 cmd="apt-get"
 
@@ -189,35 +189,9 @@ view_shadowsocks_config_info() {
 }
 get_shadowsocks_config_qr_link() {
 	if [[ $shadowsocks ]]; then
-		echo
-		echo -e "$green 正在生成链接.... 稍等片刻即可....$none"
-		echo
 		get_ip
-		local ss="ss://$(echo -n "${ssciphers}:${sspass}@${ip}:${ssport}" | base64 -w 0)#v2ray6.com_ss_${ip}"
-		echo "${ss}" >/tmp/233blog_shadowsocks.txt
-		cat /tmp/233blog_shadowsocks.txt | qrencode -s 50 -o /tmp/233blog_shadowsocks.png
-
-		local random=$(echo $RANDOM-$RANDOM-$RANDOM | base64 -w 0)
-		local link=$(curl -s --upload-file /tmp/233blog_shadowsocks.png "https://transfer.sh/${random}_v2ray6_shadowsocks.png")
-		if [[ $link ]]; then
-			echo
-			echo "---------- Shadowsocks 二维码链接 -------------"
-			echo
-			echo -e "$yellow 链接 = $cyan$link$none"
-			echo
-			echo -e " 温馨提示...$red Shadowsocks Win 4.0.6 $none客户端可能无法识别该二维码"
-			echo
-			echo "备注...链接将在 14 天后失效"
-			echo
-			echo "提醒...请不要把链接分享出去...除非你有特别的理由...."
-			echo
-		else
-			echo
-			echo -e "$red 哎呀呀呀...出错咯...请重试$none"
-			echo
-		fi
-		rm -rf /tmp/233blog_shadowsocks.png
-		rm -rf /tmp/233blog_shadowsocks.txt
+		_load qr.sh
+		_ss_qr
 	else
 		shadowsocks_config
 	fi
@@ -2171,32 +2145,8 @@ get_v2ray_config() {
 
 }
 get_v2ray_config_link() {
-	echo
-	echo -e "$green 正在生成链接.... 稍等片刻即可....$none"
-	echo
-	local random=$(echo $RANDOM-$RANDOM-$RANDOM | base64 -w 0)
-	local link=$(curl -s --upload-file $v2ray_client_config "https://transfer.sh/${random}_v2ray6_v2ray.json")
-	if [[ $link ]]; then
-		echo
-		echo "---------- V2Ray 客户端配置文件链接 -------------"
-		echo
-		echo -e "$yellow 链接 = $cyan$link$none"
-		echo
-		echo -e "$yellow SOCKS 监听端口 = ${cyan}2333${none}"
-		echo
-		echo -e "${yellow} HTTP 监听端口 = ${cyan}6666$none"
-		echo
-		echo " V2Ray 客户端使用教程: https://v2ray6.com/post/4/"
-		echo
-		echo "备注...链接将在 14 天后失效"
-		echo
-		echo "提醒...请不要把链接分享出去...除非你有特别的理由...."
-		echo
-	else
-		echo
-		echo -e "$red 哎呀呀呀...出错咯...请重试$none"
-		echo
-	fi
+	_load client_file.sh
+	_get_client_file
 }
 create_v2ray_config_text() {
 
@@ -2294,40 +2244,8 @@ get_v2ray_config_qr_link() {
 
 	create_vmess_URL_config
 
-	echo
-	echo -e "$green 正在生成链接.... 稍等片刻即可....$none"
-	echo
-	local vmess="vmess://$(cat /etc/v2ray/vmess_qr.json | tr -d '\n' | base64 -w 0)"
-	echo $vmess | tr -d '\n' >/etc/v2ray/vmess.txt
-	cat /etc/v2ray/vmess.txt | qrencode -s 50 -o /tmp/233blog_v2ray.png
-	local random=$(echo $RANDOM-$RANDOM-$RANDOM | base64 -w 0)
-	local link=$(curl -s --upload-file /tmp/233blog_v2ray.png "https://transfer.sh/${random}_v2ray6_v2ray.png")
-	if [[ $link ]]; then
-		echo
-		echo "---------- V2Ray 二维码链接 -------------"
-		echo
-		echo -e "$yellow 适用于 V2RayNG v0.4.1+ / Kitsunebi = $cyan$link$none"
-		echo
-		echo
-		echo -e "$red 友情提醒: 请务必核对扫码结果 (V2RayNG 除外) $none"
-		echo
-		echo
-		echo " V2Ray 客户端使用教程: https://v2ray6.com/post/4/"
-		echo
-		echo "备注...链接将在 14 天后失效"
-		echo
-		echo "提醒...请不要把链接分享出去...除非你有特别的理由...."
-		echo
-	else
-		echo
-		echo -e "$red 哎呀呀呀...出错咯...$none"
-		echo
-		echo -e "请尝试使用${cyan} v2ray qr ${none}重新生成"
-		echo
-	fi
-	rm -rf /tmp/233blog_v2ray.png
-	rm -rf /etc/v2ray/vmess_qr.json
-	rm -rf /etc/v2ray/vmess.txt
+	_load qr.sh
+	_qr_create
 }
 get_v2ray_vmess_URL_link() {
 	create_vmess_URL_config
